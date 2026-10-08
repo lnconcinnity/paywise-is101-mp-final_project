@@ -1,23 +1,22 @@
-import time
 from scheduler import RENDERER, INPUT
+from typing import Callable
+from time import monotonic
 
 class TextInput:
     def __init__(
         self,
-        position,
-        anchor_point,
-        prompt="> ",
-        width=20,
-        max_chars=256,
-        blink_rate=0.5,
-        onSubmit=None,
-        clear_text_on_submit=True,
-        text_transformer=None,
+        position: tuple[int, int] | None=None,
+        anchor_point: tuple[int, int] | None=None,
+        prompt: str="> ",
+        width: int=20,
+        max_chars: int=256,
+        blink_rate: float=0.5,
+        onSubmit: Callable[[str], None]=None,
+        clear_text_on_submit: bool=True,
+        text_transformer: Callable[[str], str]=None ,
     ):
         self.position = position
         self.anchor_point = anchor_point
-        self.renderer = RENDERER
-        self.input = INPUT
         self.prompt = prompt
         self.width = width
         self.max_chars = max_chars
@@ -29,12 +28,12 @@ class TextInput:
         self.text_buffer = ""
         self.cursor = 0
         self.submitted_text = ""
-        self._last_input = time.monotonic()
+        self._last_input = monotonic()
 
-    def poll(self):
-        self.input.poll_events(self.handle)
+    def poll(self) -> None:
+        INPUT.poll_events(self.handle)
 
-    def handle(self, e):
+    def handle(self, e: str) -> bool:
         buf, c = self.text_buffer, self.cursor
 
         if e in ("\x7f", "\x08"):
@@ -64,15 +63,15 @@ class TextInput:
         else:
             return False
 
-        self._last_input = time.monotonic()
+        self._last_input = monotonic()
         return True
 
-    def focus(self):
-        self._last_input = time.monotonic()
+    def focus(self) -> None:
+        self._last_input = monotonic()
 
-    def _view(self):
+    def _view(self) -> tuple[int, str]:
         offset = max(0, self.cursor - self.width)
-        visible = self.text_buffer[offset:offset + self.width]
+        visible = self.text_buffer[offset:offset + self.width + 1]
         if self.text_transformer is not None:
             shown = self.text_transformer(visible)
             shown = shown[:len(visible)].ljust(len(visible))
@@ -80,12 +79,12 @@ class TextInput:
             shown = visible
         return offset, shown
 
-    def render(self):
+    def render(self) -> str:
         _, shown = self._view()
         return self.prompt + shown.ljust(self.width + 1)
 
-    def cursor_cell(self):
-        elapsed = time.monotonic() - self._last_input
+    def cursor_cell(self) -> tuple[int, str]:
+        elapsed = monotonic() - self._last_input
         if elapsed % (self.blink_rate * 2) >= self.blink_rate:
             return None
         offset, shown = self._view()
@@ -94,16 +93,15 @@ class TextInput:
         under = shown[rel] if rel < len(shown) else " "
         return col, under
 
-    def draw(self):
-        r = self.renderer
+    def draw(self) -> None:
         line = self.render()
-        x = int(r.width * self.position[0]) - int(len(line) * self.anchor_point[0])
-        y = int(r.height * self.position[1]) - int(1 * self.anchor_point[1])
+        x = int(RENDERER.width * self.position[0]) - int(len(line) * self.anchor_point[0])
+        y = int(RENDERER.height * self.position[1]) - int(1 * self.anchor_point[1])
 
-        r.draw(x, y, line)
+        RENDERER.draw(x, y, line)
 
         cell = self.cursor_cell()
         if cell:
             col = x + cell[0]
-            if 0 <= y < r.height and 0 <= col < r.width:
-                r.buffer[y][col] = f"\033[7m{cell[1]}\033[0m"
+            if 0 <= y < RENDERER.height and 0 <= col < RENDERER.width:
+                RENDERER.buffer[y][col] = f"\033[7m{cell[1]}\033[0m"

@@ -1,47 +1,53 @@
 from terminal.Renderer import Renderer
 from terminal.InputHandler import InputHandler
-from time import sleep
+from terminal.ui.ComponentTypes import Drawable
+from time import sleep, perf_counter
 
 INPUT = InputHandler(capture_signals=True)
 RENDERER = Renderer()
 
-started = False
-layouts = []
+is_running: bool = False
+layouts: list[Drawable] = []
 
-def start():
-    # assert started, "scheduler is already running"
-    started = True
-    INPUT.start()
-
-def stop():
-    # assert not started, "scheduler hasn't started yet"
-    INPUT.stop()
-    RENDERER.close()
-    started = False
-
-def populate(layout):
+def populate(layout: Drawable) -> None:
     layouts.append(layout)
 
-def run():
-    running = True
-    start()
+def stop() -> None:
+    global is_running
+    is_running = False
+
+def run() -> None:
+    global is_running
+    is_running = True
+    INPUT.start()
+    
+    TARGET_FRAME_TIME = 1.0 / 30.0
+    last_time = perf_counter()
+    
     try:
-        while running:
+        while is_running:
+            frame_start = perf_counter()
+            dt = frame_start - last_time
+            last_time = frame_start
+            
             INPUT.flush_events()
-            if not running:
-                break
-            # poll
             for layout in layouts:
-                if hasattr(layout, "poll"):
-                    layout.poll()
+                layout.poll()
+
             RENDERER.update_dimensions()
-            # poll
             for layout in layouts:
-                if hasattr(layout, "draw"):
-                    layout.draw()
+                layout.draw()
+                
             RENDERER.render()
-            sleep(0.033)
+            
+            frame_duration = perf_counter() - frame_start
+            sleep_time = TARGET_FRAME_TIME - frame_duration
+            if sleep_time > 0:
+                sleep(sleep_time)
+                
     except KeyboardInterrupt:
         pass
     finally:
-        stop()
+        INPUT.stop()
+        RENDERER.close()
+        is_running = False

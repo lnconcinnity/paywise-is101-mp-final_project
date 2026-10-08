@@ -1,7 +1,15 @@
 from scheduler import RENDERER, INPUT
+from typing import Callable
 
 class MenuItem:
-    def __init__(self, label, onSelect=None, onFocus=None, onBlur=None, selectable=True):
+    def __init__(
+            self,
+            label: str,
+            onSelect: Callable | None=None,
+            onFocus: Callable | None=None,
+            onBlur: Callable | None=None,
+            selectable: bool=True
+        ):
         assert isinstance(label, str) or hasattr(label, "render"), (
             f"label must be a str or have render(), got {type(label).__name__}"
         )
@@ -11,29 +19,29 @@ class MenuItem:
         self.onBlur = onBlur
         self.selectable = selectable
 
-    def text(self):
+    def text(self) -> str:
         return self.label if isinstance(self.label, str) else self.label.render()
 
-    def handle(self, e):
+    def handle(self, e: str) -> bool:
         fn = getattr(self.label, "handle", None)
         return bool(fn and fn(e))
 
-    def cursor_cell(self):
+    def cursor_cell(self) -> tuple[int, str] | None:
         fn = getattr(self.label, "cursor_cell", None)
         return fn() if fn else None
 
-    def select(self):
+    def select(self) -> None:
         if self.onSelect:
             self.onSelect()
 
-    def focus(self):
+    def focus(self) -> None:
         fn = getattr(self.label, "focus", None)
         if fn:
             fn()
         if self.onFocus:
             self.onFocus()
 
-    def blur(self):
+    def blur(self) -> None:
         fn = getattr(self.label, "blur", None)
         if fn:
             fn()
@@ -44,11 +52,11 @@ class MenuItem:
 class Menu:
     def __init__(
         self,
-        position,
-        anchor_point,
-        items,
-        marker="> ",
-        wrap=True,
+        items: list[MenuItem],
+        position: tuple[int, int]| None=None,
+        anchor_point: tuple[int, int] | None=None,
+        marker: str="> ",
+        wrap: bool=True,
     ):
         self.items = [i if isinstance(i, MenuItem) else MenuItem(i) for i in items]
         assert any(i.selectable for i in self.items), "Menu needs at least one selectable item"
@@ -67,13 +75,13 @@ class Menu:
         }
         self.select_keys = ("\r", "\n")
 
-    def _first_selectable(self):
+    def _first_selectable(self) -> int:
         return next(i for i, it in enumerate(self.items) if it.selectable)
 
-    def _last_selectable(self):
+    def _last_selectable(self) -> int:
         return next(i for i in range(len(self.items) - 1, -1, -1) if self.items[i].selectable)
 
-    def _step(self, i, step):
+    def _step(self, i: int, step: int) -> int:
         n = len(self.items)
         start = i
         for _ in range(n):
@@ -87,14 +95,14 @@ class Menu:
                 return i
         return start
 
-    def move(self, delta):
+    def move(self, delta: int) -> None:
         step = 1 if delta > 0 else -1
         i = self.index
         for _ in range(abs(delta)):
             i = self._step(i, step)
         self.set_index(i)
 
-    def set_index(self, i):
+    def set_index(self, i: int) -> None:
         if i == self.index or not self.items[i].selectable:
             return
         self.items[self.index].blur()
@@ -102,13 +110,13 @@ class Menu:
         self.items[i].focus()
 
     @property
-    def selected(self):
+    def selected(self) -> MenuItem:
         return self.items[self.index]
 
-    def poll(self):
+    def poll(self) -> None:
         self.input.poll_events(self._handle)
 
-    def _handle(self, e):
+    def _handle(self, e: str) -> None:
         if self.selected.handle(e):
             return
 
@@ -121,7 +129,7 @@ class Menu:
         elif e in self.select_keys:
             self.selected.select()
 
-    def draw(self):
+    def draw(self) -> None:
         r = self.renderer
         pad = " " * len(self.marker)
         lines = [
@@ -150,5 +158,3 @@ class Menu:
             y = abs_y + self.index
             if 0 <= y < r.height and 0 <= col < r.width:
                 r.buffer[y][col] = f"\033[7m{cell[1]}\033[0m"
-
-        return abs_x, abs_y

@@ -1,7 +1,7 @@
 import sys, os, shutil, time, select
 
 class Renderer:
-    def __init__(self, bg_char=" "):
+    def __init__(self, bg_char: str=" "):
         self.bg_char = bg_char
         self.width = self.height = 0
         self.buffer = []
@@ -37,20 +37,20 @@ class Renderer:
         self.height = max(1, int(lines * self.vertical_scale) - 1)
         self.clear()
 
-    def clear(self):
+    def clear(self) -> None:
         self.buffer = [[self.bg_char] * self.width for _ in range(self.height)]
 
-    def draw(self, x, y, text):
+    def draw(self, x: int, y: int, text: str) -> None:
         if not 0 <= y < self.height:
             return
         for i, ch in enumerate(text):
             if 0 <= x + i < self.width:
                 self.buffer[y][x + i] = ch
 
-    def render(self):
+    def render(self) -> None:
         sys.stdout.write("\033[H" + "\n".join("".join(r) for r in self.buffer))
         sys.stdout.flush()
 
-    def close(self):
+    def close(self) -> None:
         sys.stdout.write("\033[?1049l\033[?25h")
         sys.stdout.flush()

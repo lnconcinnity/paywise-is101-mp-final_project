@@ -1,29 +1,40 @@
+from typing import Any, Callable
+from terminal.ui.ComponentTypes import Drawable
+
 class Page:
-    def __init__(self, name, *widgets, onEnter=None, onExit=None):
+    def __init__(
+        self,
+        name: str,
+        *widgets: Drawable,
+        onEnter: Callable | None=None, 
+        onExit: Callable | None=None
+    ):
         self.name = name
         self.widgets = list(widgets)
         self.onEnter = onEnter
         self.onExit = onExit
 
-    def enter(self):
+    def enter(self) -> None:
         if self.onEnter:
             self.onEnter()
 
-    def exit(self):
+    def exit(self) -> None:
         if self.onExit:
             self.onExit()
 
-    def poll(self):
+    def poll(self) -> None:
         for w in self.widgets:
-            w.poll()
+            if hasattr(w, "poll"):
+                w.poll()
 
-    def draw(self):
+    def draw(self) -> None:
         for w in self.widgets:
-            w.draw()
+            if hasattr(w, "draw"):
+                w.draw()
 
 
 class Pagination:
-    def __init__(self, *pages, wrap=False):
+    def __init__(self, *pages: Page, wrap: bool=False):
         assert pages, "Pagination needs at least one Page"
         for p in pages:
             assert isinstance(p, Page), f"expected Page, got {type(p).__name__}"
@@ -39,10 +50,10 @@ class Pagination:
         self.pages[0].enter()
 
     @property
-    def current(self):
+    def current(self) -> Page:
         return self.pages[self.index]
 
-    def goto(self, target):
+    def goto(self, target: str) -> bool:
         if isinstance(target, str):
             if target not in self._by_name:
                 raise KeyError(
@@ -64,13 +75,13 @@ class Pagination:
         self.current.enter()
         return True
 
-    def next(self):
+    def next(self) -> bool:
         return self._step(1)
 
-    def back(self):
+    def back(self) -> bool:
         return self._step(-1)
 
-    def _step(self, delta):
+    def _step(self, delta: int) -> bool:
         n = len(self.pages)
         i = self.index + delta
         if self.wrap:
@@ -79,8 +90,8 @@ class Pagination:
             return False
         return self.goto(i)
 
-    def poll(self):
+    def poll(self) -> None:
         self.current.poll()
 
-    def draw(self):
+    def draw(self) -> None:
         self.current.draw()
