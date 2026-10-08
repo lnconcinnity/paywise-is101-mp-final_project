@@ -1,3 +1,5 @@
+from scheduler import RENDERER, INPUT
+
 class MenuItem:
     def __init__(self, label, onSelect=None, onFocus=None, onBlur=None, selectable=True):
         assert isinstance(label, str) or hasattr(label, "render"), (
@@ -45,8 +47,6 @@ class Menu:
         position,
         anchor_point,
         items,
-        renderer,
-        input,
         marker="> ",
         wrap=True,
     ):
@@ -55,8 +55,8 @@ class Menu:
 
         self.position = position
         self.anchor_point = anchor_point
-        self.renderer = renderer
-        self.input = input
+        self.renderer = RENDERER
+        self.input = INPUT
         self.marker = marker
         self.wrap = wrap
 

@@ -1,5 +1,4 @@
 from account.Security import Security
-from util import is_str
 
 
 class Account:
@@ -30,11 +29,11 @@ class Account:
         self._privileges = []
 
     def has(self, privilege) -> bool:
-        return is_str(privilege) and privilege in self._privileges
+        return isinstance(privilege, str) and privilege in self._privileges
 
     def allow(self, privilege):
         assert not self._security.is_passwordless(), f"cannot assign privilege '{privilege}' to a passwordless user"
-        assert is_str(privilege), "privilege must be a string"
+        assert isinstance(privilege), "privilege must be a string"
         self._privileges.append(privilege)
 
     def deny(self, privilege):

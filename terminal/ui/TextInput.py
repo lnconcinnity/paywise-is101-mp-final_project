@@ -1,13 +1,11 @@
 import time
-
+from scheduler import RENDERER, INPUT
 
 class TextInput:
     def __init__(
         self,
         position,
         anchor_point,
-        renderer,
-        input,
         prompt="> ",
         width=20,
         max_chars=256,
@@ -18,8 +16,8 @@ class TextInput:
     ):
         self.position = position
         self.anchor_point = anchor_point
-        self.renderer = renderer
-        self.input = input
+        self.renderer = RENDERER
+        self.input = INPUT
         self.prompt = prompt
         self.width = width
         self.max_chars = max_chars

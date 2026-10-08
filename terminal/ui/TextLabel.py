@@ -1,9 +1,11 @@
+from scheduler import RENDERER, INPUT
+
 class TextLabel:
-    def __init__(self, position=(0, 0), anchor_point=(0, 0), text="", renderer=None):
+    def __init__(self, position=(0, 0), anchor_point=(0, 0), text=""):
         self.position = position
         self.anchor_point = anchor_point
         self.text = text
-        self.renderer = renderer
+        self.renderer = RENDERER
 
     def set_text(self, new_text):
         self.text = str(new_text)
