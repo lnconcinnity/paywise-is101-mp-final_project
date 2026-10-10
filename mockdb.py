@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 class Table:
     def __init__(self):
@@ -17,7 +17,7 @@ class Table:
     def update(self, row_id: int, **changes):
         self.rows[row_id].update(changes)
 
-    def select(self, where: Callable[[dict], bool]=None, order_by: str | None=None, reverse: bool=False):
+    def select(self, where: Callable[[dict], bool]=None, order_by: Optional[str]=None, reverse: bool=False):
         rows = [r for r in self.rows.values() if where is None or where(r)]
         if order_by:
             rows.sort(key=lambda r: r[order_by], reverse=reverse)

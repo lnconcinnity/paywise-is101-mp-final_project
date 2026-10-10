@@ -1,8 +1,8 @@
 import sys
 from threading import Thread
 from queue import Queue, Empty
-from terminal.ui.ComponentTypes import Drawable
 from typing import Callable
+from terminal.tui.Drawable import Drawable
 
 IS_WINDOWS = sys.platform == "win32"
 

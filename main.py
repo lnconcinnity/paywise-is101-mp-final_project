@@ -1,6 +1,6 @@
-from scheduler import run, populate
-from layout import layout
 from erp import create_account
+from terminal import Scheduler
+from app import layout
 
 if __name__ == "__main__":
     # Create three sample accounts with verbose enterprise permissions
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     # Initialize the UI layout
     content = layout()
-    populate(content)
+    Scheduler.populate(content)
 
     # Start the application
-    run()
+    Scheduler.run()
