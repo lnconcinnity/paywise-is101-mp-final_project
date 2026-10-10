@@ -1,10 +1,11 @@
 from scheduler import RENDERER, INPUT
 from typing import Callable
+from terminal.ui.ComponentTypes import Drawable
 
 class MenuItem:
     def __init__(
             self,
-            label: str,
+            label: str | Drawable,
             onSelect: Callable | None=None,
             onFocus: Callable | None=None,
             onBlur: Callable | None=None,
@@ -63,8 +64,6 @@ class Menu:
 
         self.position = position
         self.anchor_point = anchor_point
-        self.renderer = RENDERER
-        self.input = INPUT
         self.marker = marker
         self.wrap = wrap
 
@@ -114,7 +113,7 @@ class Menu:
         return self.items[self.index]
 
     def poll(self) -> None:
-        self.input.poll_events(self._handle)
+        INPUT.poll_events(self._handle)
 
     def _handle(self, e: str) -> None:
         if self.selected.handle(e):
@@ -130,7 +129,6 @@ class Menu:
             self.selected.select()
 
     def draw(self) -> None:
-        r = self.renderer
         pad = " " * len(self.marker)
         lines = [
             (self.marker if i == self.index else pad) + item.text()
@@ -143,18 +141,18 @@ class Menu:
         target_x, target_y = self.position
         anchor_x, anchor_y = self.anchor_point
 
-        screen_x = int(r.width * target_x)
-        screen_y = int(r.height * target_y)
+        screen_x = int(RENDERER.width * target_x)
+        screen_y = int(RENDERER.height * target_y)
 
         abs_x = screen_x - int(box_width * anchor_x)
         abs_y = screen_y - int(box_height * anchor_y)
 
         for row, line in enumerate(lines):
-            r.draw(abs_x, abs_y + row, line.ljust(box_width))
+            RENDERER.draw(abs_x, abs_y + row, line.ljust(box_width))
 
         cell = self.selected.cursor_cell()
         if cell:
             col = abs_x + len(self.marker) + cell[0]
             y = abs_y + self.index
-            if 0 <= y < r.height and 0 <= col < r.width:
-                r.buffer[y][col] = f"\033[7m{cell[1]}\033[0m"
+            if 0 <= y < RENDERER.height and 0 <= col < RENDERER.width:
+                RENDERER.buffer[y][col] = f"\033[7m{cell[1]}\033[0m"

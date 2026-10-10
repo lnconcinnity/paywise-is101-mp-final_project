@@ -92,6 +92,6 @@ class Pagination:
 
     def poll(self) -> None:
         self.current.poll()
-
+        
     def draw(self) -> None:
         self.current.draw()

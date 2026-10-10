@@ -10,7 +10,7 @@ class Renderer:
         self.vertical_scale = self._initialize_aspect_ratio()
         self.update_dimensions()
 
-    def _initialize_aspect_ratio(self):
+    def _initialize_aspect_ratio(self) -> float:
         sys.stdout.write("\033[9999;9999H\033[6n")
         sys.stdout.flush()
         fd = sys.stdin.fileno()
@@ -31,7 +31,7 @@ class Renderer:
             pass
         return 1.0
 
-    def update_dimensions(self):
+    def update_dimensions(self) -> None:
         cols, lines = shutil.get_terminal_size(fallback=(80, 24))
         self.width = cols
         self.height = max(1, int(lines * self.vertical_scale) - 1)

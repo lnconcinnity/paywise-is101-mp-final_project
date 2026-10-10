@@ -22,3 +22,9 @@ class Table:
         if order_by:
             rows.sort(key=lambda r: r[order_by], reverse=reverse)
         return rows
+
+    def find(self, where: Callable[[dict], bool]=None):
+        for row_id, row in self.rows.items():
+            if where is None or where(row):
+                return row_id, row
+        return None, None
