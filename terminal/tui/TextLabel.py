@@ -1,5 +1,4 @@
 from terminal.tui.Drawable import Drawable
-from typing import Optional
 
 class TextLabel(Drawable):
     def __init__(
@@ -7,7 +6,7 @@ class TextLabel(Drawable):
         text: str = "",
         position: tuple[float, float] = (0.0, 0.0),
         anchor_point: tuple[float, float] = (0.0, 0.0),
-        size: Optional[tuple[int, int]] = None,
+        size: tuple[int, int] | None = None,
     ):
         super().__init__(position, anchor_point, size)
         self.text = str(text)

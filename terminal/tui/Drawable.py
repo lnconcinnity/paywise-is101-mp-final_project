@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Optional
+from typing import Iterable
 
 class Drawable:
     focusable: bool = False
@@ -7,7 +7,7 @@ class Drawable:
         self,
         position: tuple[float, float] = (0.0, 0.0),
         anchor_point: tuple[float, float] = (0.0, 0.0),
-        size: Optional[tuple[float, float]] = None,
+        size: tuple[float, float] | None = None,
         visible: bool = True,
     ):
         self.position = position
@@ -17,7 +17,7 @@ class Drawable:
 
         self.x = self.y = self.w = self.h = 0
  
-        self.parent: Optional[Drawable] = None
+        self.parent: Drawable | None = None
         self.children: list[Drawable] = []
 
     # ancestry handling
@@ -84,5 +84,5 @@ class Drawable:
     def blur(self) -> None: ...
 
     # unique to text input components, this method should return the current cursor position in the text input, or None if there is no cursor
-    def cursor_cell(self) -> Optional[tuple[int, int]]:
+    def cursor_cell(self) -> tuple[int, int] | None:
         return None

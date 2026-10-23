@@ -1,9 +1,8 @@
 from terminal import *
-from typing import Optional
 import app.pages as pages
 
 def layout() -> Pagination:
-    pagination: Optional[Pagination] = None
+    pagination: Pagination | None = None
 
     greeting = TextLabel("")
     home_menu = Menu([
@@ -23,7 +22,7 @@ def layout() -> Pagination:
     )
 
     def on_login(user: dict) -> None:
-        greeting.set_text(f"Signed in as {user['username']} ({user['privileges']['role']})")
+        greeting.set_text(f"Signed in as {user['username']} ({user['privileges']['role'].replace("_", " ").title()})")
         pagination.goto("home")
 
     pagination = Pagination(pages.LoginPage(on_login), home)

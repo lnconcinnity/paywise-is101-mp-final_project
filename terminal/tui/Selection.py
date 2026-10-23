@@ -1,12 +1,12 @@
-from typing import Callable, Optional
+from typing import Callable
 
 class Selection:
     def __init__(
         self,
         count: Callable[[], int],
         wrap: bool = False,
-        skip: Optional[Callable[[int], bool]] = None,
-        on_change: Optional[Callable[[int, int], None]] = None,
+        skip: Callable[[int], bool] | None = None,
+        on_change: Callable[[int, int], None] | None = None,
     ):
         self.count = count
         self.wrap = wrap
@@ -18,10 +18,10 @@ class Selection:
     def can_select(self, i: int) -> bool:
         return 0 <= i < self.count() and not (self.skip and self.skip(i))
 
-    def first(self) -> Optional[int]:
+    def first(self) -> int | None:
         return next((i for i in range(self.count()) if self.can_select(i)), None)
 
-    def last(self) -> Optional[int]:
+    def last(self) -> int | None:
         return next((i for i in range(self.count() - 1, -1, -1) if self.can_select(i)), None)
 
     def _next(self, i: int, step: int) -> int:

@@ -1,5 +1,4 @@
 import sys, os, shutil, time
-from typing import Optional
 
 IS_WINDOWS = sys.platform == "win32"
 if not IS_WINDOWS:
@@ -15,7 +14,7 @@ class Renderer:
         self.buffer: list[list[str]] = []
         self.vertical_scale = 1.0
         self.started = False
-        self._size: Optional[tuple[int, int]] = None
+        self._size: tuple[int, int] | None = None
 
     def start(self) -> None:
         if self.started:
@@ -74,7 +73,7 @@ class Renderer:
         sys.stdout.write("\033[H" + "\n".join("".join(r) for r in self.buffer))
         sys.stdout.flush()
 
-    def draw(self, x: int, y: int, text: str, clip: Optional[Clip] = None) -> None:
+    def draw(self, x: int, y: int, text: str, clip: Clip | None= None) -> None:
         x0, y0, x1, y1 = 0, 0, self.width, self.height
         if clip is not None:
             cx, cy, cw, ch = clip
@@ -86,7 +85,7 @@ class Renderer:
         if start < end:
             self.buffer[y][start:end] = text[start - x:end - x]
 
-    def draw_cursor(self, x: int, y: int, ch: str = " ", clip: Optional[Clip] = None) -> None:
+    def draw_cursor(self, x: int, y: int, ch: str = " ", clip: Clip | None = None) -> None:
         x0, y0, x1, y1 = 0, 0, self.width, self.height
         if clip is not None:
             cx, cy, cw, chh = clip

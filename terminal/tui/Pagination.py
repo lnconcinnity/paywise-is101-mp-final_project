@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable
 
 from terminal.tui.Selection import Selection
 from terminal.tui.AbsoluteLayout import AbsoluteLayout
@@ -10,8 +10,8 @@ class Page(AbsoluteLayout):
         self,
         name: str,
         *widgets: Drawable,
-        onEnter: Optional[Callable] = None,
-        onExit: Optional[Callable] = None,
+        onEnter: Callable | None = None,
+        onExit: Callable | None = None,
     ):
         super().__init__(*widgets)
         self.name = name

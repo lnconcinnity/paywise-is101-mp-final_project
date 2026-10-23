@@ -11,14 +11,16 @@ def LoginPage(on_login: Callable[[dict], None]) -> Page:
     status = TextLabel("", size=(len(TITLE), 1))
 
     def attempt() -> None:
-        _, user = users.find(
-            lambda u: u["username"] == username.text_buffer
-            and u["password"] == password.text_buffer
-        )
+        user = users.select(
+            where=lambda u: u["username"] == username.text_buffer and u["password"] == password.text_buffer,
+            limit=1
+        )[0]
+
         if user is None:
             status.set_text("Invalid username or password.")
             return
         status.set_text("")
+        
         for field in (username, password):
             field.text_buffer, field.cursor = "", 0
         on_login(user)

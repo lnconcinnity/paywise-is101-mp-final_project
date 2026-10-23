@@ -1,5 +1,4 @@
 from terminal.tui.Drawable import Drawable
-from typing import Optional
 
 VERTICAL = "vertical"
 HORIZONTAL = "horizontal"
@@ -14,7 +13,7 @@ class StackLayout(Drawable):
         align: str = "start",
         position: tuple[float, float] = (0.0, 0.0),
         anchor_point: tuple[float, float] = (0.0, 0.0),
-        size: Optional[tuple[int, int]] = None,
+        size: tuple[int, int] | None = None,
         visible: bool = True,
     ):
         super().__init__(position, anchor_point, size, visible)

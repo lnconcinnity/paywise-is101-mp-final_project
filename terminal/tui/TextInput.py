@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable
 from time import monotonic
 from terminal.tui.Drawable import Drawable
 
@@ -10,8 +10,8 @@ class TextInput(Drawable):
         self,
         position: tuple[float, float] = (0.0, 0.0),
         anchor_point: tuple[float, float] = (0.0, 0.0),
-        size: Optional[tuple[int, int]] = None,
-        onSubmit: Optional[Callable[[str], None]] = None,
+        size: tuple[int, int] | None = None,
+        onSubmit: Callable[[str], None] | None = None,
         prompt: str = "> ",
         width: int = 20,
         max_chars: int = 256,
@@ -93,7 +93,7 @@ class TextInput(Drawable):
         _, shown = self._view()
         return self.prompt + shown.ljust(self.width + 1)
 
-    def cursor_cell(self) -> Optional[tuple[int, int, str]]:
+    def cursor_cell(self) -> tuple[int, int, str] | None:
         if not self.focused:
             return None
         elapsed = monotonic() - self._last_input

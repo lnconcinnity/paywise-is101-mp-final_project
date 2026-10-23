@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable
 from terminal.tui.Selection import Selection
 from terminal.tui.Drawable import Drawable
 from terminal.tui.StackLayout import StackLayout
@@ -8,9 +8,9 @@ class MenuItem(StackLayout):
     def __init__(
         self,
         content: str | Drawable,
-        onSelect: Optional[Callable] = None,
-        onFocus: Optional[Callable] = None,
-        onBlur: Optional[Callable] = None,
+        onSelect: Callable | None = None,
+        onFocus: Callable | None = None,
+        onBlur: Callable | None = None,
         selectable: bool = True,
     ):
         if isinstance(content, str):
@@ -51,7 +51,7 @@ class Menu(StackLayout):
         items: list[MenuItem | str | Drawable],
         position: tuple[float, float] = (0.0, 0.0),
         anchor_point: tuple[float, float] = (0.0, 0.0),
-        size: Optional[tuple[int, int]] = None,
+        size: tuple[int, int] | None = None,
         marker: str = "> ",
         wrap: bool = True,
         spacing: int = 0,
