@@ -3,6 +3,7 @@ import app.pages as pages
 
 def layout() -> Pagination:
     pagination: Pagination | None = None
+    current_user : dict | None = None
 
     greeting = TextLabel("")
     home_menu = Menu([
@@ -24,6 +25,16 @@ def layout() -> Pagination:
     def on_login(user: dict) -> None:
         greeting.set_text(f"Signed in as {user['username']} ({user['privileges']['role'].replace("_", " ").title()})")
         pagination.goto("home")
+        match user.properties.role:
+            case "hr_manager":
+                pagination.goto("hr_manager_view")
+            case "payroll_manager":
+                pagination.goto("payroll_manager_view")
+            case _:
+                pagination.goto("employee_view")
 
-    pagination = Pagination(pages.LoginPage(on_login), home)
+    pagination = Pagination(
+        pages.LoginPage(on_login), 
+        pages.HumanResourcesPage(lambda: current_user, lambda: pagination)
+    )
     return pagination

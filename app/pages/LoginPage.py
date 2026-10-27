@@ -9,16 +9,22 @@ def LoginPage(on_login: Callable[[dict], None]) -> Page:
     username = TextInput(prompt="Username: ", clear_text_on_submit=False)
     password = TextInput(prompt="Password: ", clear_text_on_submit=False, hidden=True)
     status = TextLabel("", size=(len(TITLE), 1))
+    attempts = 0
 
     def attempt() -> None:
+        nonlocal attempts
+        if attempts >= 3:
+            status.set_text("Locked out!")
+            return
+        attempts += 1
         user = users.select(
             where=lambda u: u["username"] == username.text_buffer and u["password"] == password.text_buffer,
             limit=1
-        )[0]
-
-        if user is None:
+        )
+        if user is None or not user:
             status.set_text("Invalid username or password.")
             return
+        user, *_ = user
         status.set_text("")
         
         for field in (username, password):

@@ -11,12 +11,12 @@ records = table("name")
 def create_account(
     username: str,
     password: str,
-    privileges: dict
+    properties: dict
 ) -> int:
     user_id = users.insert({
         'username': username,
         'password': password,
-        'privileges': privileges
+        'properties': properties
     })
     return user_id
 
