@@ -3,20 +3,18 @@ from typing import Callable
 from erp import users
 from terminal import *
 
-def LoginPage(on_login: Callable[[dict], None]) -> Page:
+def LoginPage(on_login: Callable[[dict], None], get_attempts, increment_attempts) -> Page:
     TITLE = "Welcome to PayWise Employee CLI Portal"
 
     username = TextInput(prompt="Username: ", clear_text_on_submit=False)
     password = TextInput(prompt="Password: ", clear_text_on_submit=False, hidden=True)
     status = TextLabel("", size=(len(TITLE), 1))
-    attempts = 0
 
     def attempt() -> None:
-        nonlocal attempts
-        if attempts >= 3:
+        if get_attempts() >= 3:
             status.set_text("Locked out!")
             return
-        attempts += 1
+        increment_attempts()
         user = users.select(
             where=lambda u: u["username"] == username.text_buffer and u["password"] == password.text_buffer,
             limit=1
