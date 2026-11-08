@@ -1,4 +1,5 @@
 from terminal.tui.Drawable import Drawable
+from typing import Optional
 
 VERTICAL = "vertical"
 HORIZONTAL = "horizontal"
@@ -13,7 +14,7 @@ class StackLayout(Drawable):
         align: str = "start",
         position: tuple[float, float] = (0.0, 0.0),
         anchor_point: tuple[float, float] = (0.0, 0.0),
-        size: tuple[int, int] | None = None,
+        size: Optional[tuple[int, int]] = None,
         visible: bool = True,
     ):
         super().__init__(position, anchor_point, size, visible)
@@ -24,6 +25,7 @@ class StackLayout(Drawable):
         self.orientation = orientation
         self.spacing = spacing
         self.align = align
+        self.offset = 0
         self.add_children([*children])
 
     @property
@@ -55,8 +57,13 @@ class StackLayout(Drawable):
         horiz = self._horizontal
         main_total, cross_total = (size[0], size[1]) if horiz else (size[1], size[0])
 
+        kids = self._shown()
+        start = max(0, min(self.offset, len(kids)))
+        for c in kids[:start]:
+            c.arrange(position, (0, 0))
+
         pos = 0
-        for c in self._shown():
+        for c in kids[start:]:
             remaining = max(0, main_total - pos)
             cw, ch = c.measure((remaining, cross_total)) if horiz else c.measure((cross_total, remaining))
             main, cross = (cw, ch) if horiz else (ch, cw)

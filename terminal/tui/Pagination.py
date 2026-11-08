@@ -8,8 +8,8 @@ from terminal.tui.Drawable import Drawable
 class Page(AbsoluteLayout):
     def __init__(
         self,
-        name: str,
         *widgets: Drawable,
+        name: str,
         onEnter: Callable | None = None,
         onExit: Callable | None = None,
     ):

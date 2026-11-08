@@ -19,6 +19,7 @@ class TextInput(Drawable):
         clear_text_on_submit: bool = True,
         hidden: bool = False,
         autofocus: bool = False,
+        style: tuple[int, ...] = ()
     ):
         super().__init__(position, anchor_point, size)
         self.prompt = prompt
@@ -32,6 +33,7 @@ class TextInput(Drawable):
         self.text_buffer = ""
         self.cursor = 0
         self.submitted_text = ""
+        self.style = style
         self.focused = False
         self._last_input = monotonic()
         if autofocus:
@@ -108,7 +110,7 @@ class TextInput(Drawable):
         return self.x + col, self.y, under
 
     def paint(self, r) -> None:
-        r.draw(self.x, self.y, self.render(), clip=self.rect)
+        r.draw(self.x, self.y, self.render(), self.style, clip=self.rect)
 
         cell = self.cursor_cell()
         if cell:

@@ -1,10 +1,10 @@
-import sys
+from sys import platform
 from threading import Thread
 from queue import Queue, Empty
 from typing import Callable
 from terminal.tui.Drawable import Drawable
 
-IS_WINDOWS = sys.platform == "win32"
+IS_WINDOWS = platform == "win32"
 
 if IS_WINDOWS:
     import msvcrt

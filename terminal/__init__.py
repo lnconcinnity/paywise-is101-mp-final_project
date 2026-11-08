@@ -1,7 +1,7 @@
+from time import sleep, perf_counter
 from terminal.Renderer import Renderer
 from terminal.InputHandler import InputHandler
-from time import sleep, perf_counter
-
+from terminal.colors import *
 from terminal.tui.Drawable import Drawable
 from terminal.tui.TextInput import TextInput
 from terminal.tui.TextLabel import TextLabel
@@ -64,4 +64,5 @@ class Scheduler:
             cls.RENDERER.close()
             cls.running = False
 
-__all__ = ["Scheduler", "TextInput", "TextLabel", "Menu", "MenuItem", "Pagination", "Page", "AbsoluteLayout", "StackLayout"]
+colors_list = [name for name in dir() if name.isupper()] + ["Style"]
+__all__ = ["Scheduler", "TextInput", "TextLabel", "Menu", "MenuItem", "Pagination", "Page", "AbsoluteLayout", "StackLayout"] + colors_list
